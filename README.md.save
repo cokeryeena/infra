@@ -1,0 +1,41 @@
+# DevOps Kubernetes Node Setup
+
+This project demonstrates a full workflow of provisioning, connecting, and configuring Kubernetes nodes using **Terraform** and **Ansible**.
+
+## 🔹 Workflow Overview
+
+1. **Terraform** provisions:
+   - VPC
+   - Public Subnet
+   - Internet Gateway
+   - Route Table
+   - Security Group
+   - EC2 instances for Kubernetes nodes
+
+2. **SSH Key Management**:
+   - A PEM key (`devops-key.pem`) is used for secure SSH access.
+   - Laptop IP is added to the node security groups for SSH ingress.
+
+3. **Ansible Configuration**:
+   - `inventory.ini` lists nodes with public IPs.
+   - Private key is configured in the inventory.
+   - `playbook.yaml` sets up Kubernetes software on nodes.
+
+4. **Execution Steps**:
+   - Move PEM to `~/.ssh` and set `chmod 600`.
+   - Add laptop public IP to node security groups.
+   - Test SSH connectivity.
+   - Run Ansible playbook.
+
+## 🔹 Commands
+
+```bash
+# Move key
+cp /path/to/devops-key.pem ~/.ssh/devops-key.pem
+chmod 600 ~/.ssh/devops-key.pem
+
+# Test SSH
+ssh -i ~/.ssh/devops-key.pem ubuntu@<node-public-ip>
+
+# Run Ansible
+ansible-playbook -i inventory.ini playbook.yaml

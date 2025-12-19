@@ -5,16 +5,57 @@ on:
     branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    #  Checkout
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
+    #  AWS Credentials
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    #  Terraform Provisioning
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.0
+
+    - name: Terraform Init & Apply
+      run: |
+        cd terraform
+        terraform init
+        terraform apply -auto-approve
+
+    #  Ansible Configuration
+    - name: Install Ansible
+      run: |
+        sudo apt update
+        sudo apt install -y ansible
+
+    - name: Set up SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEVOPS_KEY }}" > ~/.ssh/devops-key
+        chmod 600 ~/.ssh/devops-key
+        echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+    - name: Run Ansible Playbook
+      run: |
+        cd ansible
+        ansible-playbook -i inventory.ini playbook.yaml
+
+    #  Docker Build & Push
     - name: Set up Docker
       uses: docker/setup-buildx-action@v2
 
-    - name: Login to Docker Hub
+    - name: Docker login
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -25,6 +66,7 @@ jobs:
         docker build -t boyyeena/myapp:latest ./app
         docker push boyyeena/myapp:latest
 
+    #  Kubernetes Deployment
     - name: Set up kubectl
       uses: azure/setup-kubectl@v3
       with:
