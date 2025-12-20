@@ -46,10 +46,6 @@ jobs:
         chmod 600 ~/.ssh/devops-key
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
-    - name: Set up SSH key
-      run: |
-        telnet 3.92.26.142 22
-        telnet 3.81.49.89 22
         
     - name: Run Ansible Playbook
       run: |
