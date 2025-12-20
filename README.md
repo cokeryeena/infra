@@ -55,7 +55,7 @@ The purpose of this project is to show real-world DevOps fundamentals: automatio
 
 ## Problem Encounted
 
-Initially i had problems ssh'ing int the nodes servers because in my terraform script, i mistaken used a different ami for those servers and also one time i had to reboot the EC2 instance (which changed the public ip in that process) and ansible playbook.yaml failed to run because i didn't realize i had not changed the inbound rule but i figured out eventually
+Initially i had problems ssh'ing into the nodes servers because in my terraform script, i mistakenly used a different ami for those servers and also one time i had to reboot the EC2 instance (which changed the public ip in that process) and ansible playbook.yaml failed to run because i didn't realize i had not changed the inbound rules but i figured out eventually.
 
 ## Key Learnings
 
