@@ -85,6 +85,14 @@ resource "aws_security_group" "k8s_sg" {
   }
 
   ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description = "Kubernetes API / App"
     from_port   = 30000
     to_port     = 32767
