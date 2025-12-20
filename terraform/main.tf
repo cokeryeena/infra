@@ -81,7 +81,7 @@ resource "aws_security_group" "k8s_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["34.203.199.173/32"]
+    cidr_blocks = ["54.165.147.166/32"]
   }
 
   ingress {
