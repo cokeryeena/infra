@@ -15,9 +15,10 @@
         state: present
 
     - name: Add Kubernetes GPG key
-      shell: |
-        curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key \
-        | gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg
+      apt_key:
+        url: https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key
+        state: present
+
 
     - name: Add Kubernetes apt repository
       shell: |
