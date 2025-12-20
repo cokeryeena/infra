@@ -42,9 +42,13 @@ jobs:
     - name: Set up SSH key
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.DEVOPS_KEY }}" > ~/.ssh/devops-key
-        chmod 600 ~/.ssh/devops-key
-        echo "StrictHostKeyChecking no" >> ~/.ssh/config
+        echo "${{ secrets.DEVOPS_KEY }}" > ~/.ssh/devops-key.pem
+        chmod 600 ~/.ssh/devops-key.pem
+        cat >> ~/.ssh/config <<EOL
+        Host *
+            StrictHostKeyChecking no
+            IdentityFile ~/.ssh/devops-key.pem
+        EOL
 
         
     - name: Run Ansible Playbook
