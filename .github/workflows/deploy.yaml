@@ -30,17 +30,17 @@ jobs:
         terraform init
         terraform apply -auto-approve
 
-    #  Generate dynamic Ansible inventory
-    - name: Generate Ansible inventory from Terraform output
+    #  Generate Ansible inventory from Terraform output
+    - name: Generate Ansible inventory
       run: |
         cd terraform
         terraform output -json instance_ips > ../ansible/inventory.json
         cd ../ansible
         jq -r '.[] | "k8s ansible_host=\(.) ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/devops-key"' inventory.json > inventory.ini
 
-    #  Install Ansible
-    - name: Install Ansible
-      run: sudo apt update && sudo apt install -y ansible jq
+    #  Install dependencies
+    - name: Install Ansible & jq
+      run: sudo apt update && sudo apt install -y ansible jq sshpass
 
     #  Set up SSH key
     - name: Set up SSH key
@@ -49,6 +49,17 @@ jobs:
         echo "${{ secrets.DEVOPS_KEY }}" > ~/.ssh/devops-key
         chmod 600 ~/.ssh/devops-key
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+    #  Wait for SSH to become available
+    - name: Wait for EC2 instances to be ready
+      run: |
+        for ip in $(jq -r '.[]' inventory.json); do
+          echo "Waiting for $ip ..."
+          until ssh -o StrictHostKeyChecking=no -i ~/.ssh/devops-key ubuntu@$ip "echo ok" &>/dev/null; do
+            sleep 10
+          done
+          echo "$ip is reachable"
+        done
 
     #  Run Ansible playbook
     - name: Run Ansible Playbook
