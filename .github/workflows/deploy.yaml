@@ -71,12 +71,19 @@ jobs:
         docker build -t boyyeena/myapp:latest ./app
         docker push boyyeena/myapp:latest
 
-    #  Kubernetes Deployment
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'v1.28.0'
+# Kubernetes Deployment
+   - name: Set up kubectl
+   uses: azure/setup-kubectl@v3
+   with:
+     version: 'v1.28.0'
 
-    - name: Deploy to Kubernetes
-      run: |
-        kubectl apply -f kubernetes/
+  - name: Configure kubeconfig
+    run: |
+      mkdir -p ~/.kube
+      echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
+      chmod 600 ~/.kube/config
+
+ - name: Deploy to Kubernetes
+  run: |
+     kubectl apply -f kubernetes/
+
