@@ -9,6 +9,13 @@ jobs:
     runs-on: [self-hosted, k8s]
 
     steps:
+    
+    - name: Runner sanity check
+  run: |
+    hostname
+    whoami
+    kubectl get nodes
+
     # Checkout
     - name: Checkout repository
       uses: actions/checkout@v3
