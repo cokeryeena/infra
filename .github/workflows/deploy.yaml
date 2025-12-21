@@ -9,11 +9,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    #  Checkout
+    # Checkout
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    #  AWS Credentials
+    # AWS Credentials
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -21,7 +21,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    #  Terraform Provisioning
+    # Terraform Provisioning
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
@@ -33,7 +33,7 @@ jobs:
         terraform init
         terraform apply -auto-approve
 
-    #  Ansible Configuration
+    # Ansible Configuration
     - name: Install Ansible
       run: |
         sudo apt update
@@ -44,46 +44,45 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.DEVOPS_KEY }}" > ~/.ssh/devops-key.pem
         chmod 600 ~/.ssh/devops-key.pem
-        cat >> ~/.ssh/config <<EOL
+        cat >> ~/.ssh/config <<EOF
         Host *
-            StrictHostKeyChecking no
-            IdentityFile ~/.ssh/devops-key.pem
-        EOL
+          StrictHostKeyChecking no
+          IdentityFile ~/.ssh/devops-key.pem
+        EOF
 
-        
     - name: Run Ansible Playbook
       run: |
         cd ansible
         ansible-playbook -i inventory.ini playbook.yaml
 
-    #  Docker Build & Push
+    # Docker Build & Push
     - name: Set up Docker
       uses: docker/setup-buildx-action@v2
 
-    - name: Docker login
+    - name: Docker Login
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
-    - name: Build and push Docker image
+    - name: Build and Push Docker Image
       run: |
         docker build -t boyyeena/myapp:latest ./app
         docker push boyyeena/myapp:latest
 
-# Kubernetes Deployment
-   - name: Set up kubectl
-   uses: azure/setup-kubectl@v3
-   with:
-     version: 'v1.28.0'
+    # Kubernetes Deployment
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
 
-  - name: Configure kubeconfig
-    run: |
-      mkdir -p ~/.kube
-      echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
-      chmod 600 ~/.kube/config
+    - name: Configure kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
+        chmod 600 ~/.kube/config
 
- - name: Deploy to Kubernetes
-  run: |
-     kubectl apply -f kubernetes/
+    - name: Deploy to Kubernetes
+      run: |
+        kubectl apply -f kubernetes/
 
