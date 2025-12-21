@@ -9,12 +9,12 @@ jobs:
     runs-on: [self-hosted, k8s]
 
     steps:
-    
+    # Runner sanity check
     - name: Runner sanity check
-  run: |
-    hostname
-    whoami
-    kubectl get nodes
+      run: |
+        hostname
+        whoami
+        kubectl get nodes
 
     # Checkout
     - name: Checkout repository
@@ -92,4 +92,3 @@ jobs:
     - name: Deploy to Kubernetes
       run: |
         kubectl apply -f kubernetes/
-
