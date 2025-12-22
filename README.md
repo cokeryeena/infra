@@ -80,3 +80,4 @@ Initially i had problems ssh'ing into the nodes servers because in my terraform 
 This project reflects real DevOps challenges and solutions:
 automation, failure recovery, cloud networking, and continuous delivery.
 # trigger
+# trigger
