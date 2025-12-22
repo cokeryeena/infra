@@ -19,7 +19,7 @@ The purpose of this project is to show real-world DevOps fundamentals: automatio
 
 - GitHub Actions pipeline success
 
-![Actions](screenshots/github-actions.png)
+![Github Actions](screenshots/cicd-success.png)
 
 - Running pods
 
