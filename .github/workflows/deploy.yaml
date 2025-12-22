@@ -14,11 +14,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # Configure kubeconfig 
+    # Configure kubeconfig
     - name: Configure kubeconfig
       run: |
         mkdir -p ~/.kube
-        echo "${{ secrets.KUBECONFIG_DATA }}" > ~/.kube/config
+        echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > ~/.kube/config
         chmod 600 ~/.kube/config
 
     # Runner sanity check
@@ -26,6 +26,7 @@ jobs:
       run: |
         hostname
         whoami
+        kubectl config current-context
         kubectl get nodes
 
     # AWS Credentials
@@ -70,8 +71,8 @@ jobs:
         cd ansible
         ansible-playbook -i inventory.ini playbook.yaml
 
-    # Docker
-    - name: Set up Docker
+    # Docker Build & Push
+    - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
     - name: Docker Login
@@ -85,7 +86,8 @@ jobs:
         docker build -t boyyeena/myapp:latest ./app
         docker push boyyeena/myapp:latest
 
-    # Deploy
+    # Deploy to Kubernetes
     - name: Deploy to Kubernetes
       run: |
         kubectl apply -f kubernetes/
+        kubectl rollout status deployment --all
