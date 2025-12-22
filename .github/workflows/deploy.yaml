@@ -90,4 +90,5 @@ jobs:
     - name: Deploy to Kubernetes
       run: |
         kubectl apply -f kubernetes/
-        kubectl rollout status deployment --all
+        kubectl rollout status deployment/myapp-deployment
+
